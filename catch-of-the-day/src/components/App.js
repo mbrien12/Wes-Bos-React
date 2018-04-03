@@ -12,11 +12,23 @@ class App extends React.Component {
     order: {}
   };
 
+// This will be triggered when component is first rendered on the page
   componentDidMount() {
+    const { params } = this.props.match;
+    // reinstate local storage
+    const localStorageRef = localStorage.getItem(params.storeId);
+    if (localStorageRef){
+      this.setState({ order: JSON.parse(localStorageRef)})
+    }
     this.ref = base.syncState(`${this.props.match.params.storeId}/fishes`, {
       context: this,
       state: "fishes"
     });
+  }
+
+// Will be triggered when component updates
+  componentDidUpdate(){
+    localStorage.setItem(this.props.match.params.storeId, JSON.stringify(this.state.order));
   }
 
   componentWillUnmount(){
