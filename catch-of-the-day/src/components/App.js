@@ -12,13 +12,13 @@ class App extends React.Component {
     order: {}
   };
 
-// This will be triggered when component is first rendered on the page
+  // This will be triggered when component is first rendered on the page
   componentDidMount() {
     const { params } = this.props.match;
     // reinstate local storage
     const localStorageRef = localStorage.getItem(params.storeId);
-    if (localStorageRef){
-      this.setState({ order: JSON.parse(localStorageRef)})
+    if (localStorageRef) {
+      this.setState({ order: JSON.parse(localStorageRef) });
     }
     this.ref = base.syncState(`${this.props.match.params.storeId}/fishes`, {
       context: this,
@@ -26,12 +26,15 @@ class App extends React.Component {
     });
   }
 
-// Will be triggered when component updates
-  componentDidUpdate(){
-    localStorage.setItem(this.props.match.params.storeId, JSON.stringify(this.state.order));
+  // Will be triggered when component updates
+  componentDidUpdate() {
+    localStorage.setItem(
+      this.props.match.params.storeId,
+      JSON.stringify(this.state.order)
+    );
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     base.removeBinding(this.ref);
   }
 
@@ -44,12 +47,20 @@ class App extends React.Component {
 
   updateFish = (key, updatedFish) => {
     // take a copy of current state
-    const fishes = { ...this.state.fishes}
+    const fishes = { ...this.state.fishes };
     // update state
     fishes[key] = updatedFish;
     // set state
-    this.setState({ fishes })
-  }
+    this.setState({ fishes });
+  };
+
+  deleteFish = key => {
+    // 1. take copy of state
+    const fishes = { ...this.state.fishes };
+    // 2. update the state - set to null so also deleted from firebase
+    fishes[key] = null;
+    this.setState({ fishes });
+  };
 
   loadSampleFishes = () => {
     this.setState({ fishes: sampleFishes });
@@ -61,6 +72,12 @@ class App extends React.Component {
     // 2. Add to order or update number in order
     order[key] = order[key] + 1 || 1;
     // 3. Call setState to update state object
+    this.setState({ order });
+  };
+
+  removeFromOrder = key => {
+    const order = { ...this.state.order };
+    delete order[key];
     this.setState({ order });
   };
 
@@ -80,10 +97,15 @@ class App extends React.Component {
             ))}
           </ul>
         </div>
-        <Order fishes={this.state.fishes} order={this.state.order} />
+        <Order
+          fishes={this.state.fishes}
+          order={this.state.order}
+          removeFromOrder={this.removeFromOrder}
+        />
         <Inventory
           addFish={this.addFish}
           updateFish={this.updateFish}
+          deleteFish={this.deleteFish}
           loadSampleFishes={this.loadSampleFishes}
           fishes={this.state.fishes}
         />
