@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 // If only has a render method should instead be a STATELESS FUNCTIONAL COMPONENT
 
@@ -17,6 +18,10 @@ const Header = (props) => (
   </h3>
 </header>
 )
+
+Header.propTypes = {
+  tagline: PropTypes.string.isRequired
+}
 
 export default Header;
  
